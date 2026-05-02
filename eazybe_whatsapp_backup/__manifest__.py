@@ -1,12 +1,13 @@
 {
-    "name": "WhatsApp Chat Backup",
+    "name": "WhatsApp Integration by Eazybe",
     "version": "19.0.1.0.0",
-    "summary": "Contact-linked Odoo conversations for Eazybe WhatsApp chat backups",
-    "category": "Sales/CRM",
-    "license": "LGPL-3",
+    "summary": "Connect Personal WhatsApp or WhatsApp Business to Odoo - No API",
+    "category": "Marketing",
+    "license": "OPL-1",
     "author": "Eazybe",
     "maintainer": "Eazybe",
     "website": "https://eazybe.com",
+    "support": "hey@eazybe.com",
     "depends": [
         "base",
         "contacts",
