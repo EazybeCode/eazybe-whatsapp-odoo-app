@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="model_x_eazybe_whatsapp_backup" model="ir.model">
+        <field name="name">Eazybe WhatsApp Backup</field>
+        <field name="model">x_eazybe_whatsapp_backup</field>
+        <field name="state">manual</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_name" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_name</field>
+        <field name="field_description">Internal Reference</field>
+        <field name="ttype">char</field>
+        <field name="required">True</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_partner_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_partner_id</field>
+        <field name="field_description">Contact</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">res.partner</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_lead_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_lead_id</field>
+        <field name="field_description">Lead</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">crm.lead</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_chat_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_chat_id</field>
+        <field name="field_description">Chat ID</field>
+        <field name="ttype">char</field>
+        <field name="required">True</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_transcript_html" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_transcript_html</field>
+        <field name="field_description">Transcript</field>
+        <field name="ttype">html</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_latest_message_time" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_latest_message_time</field>
+        <field name="field_description">Latest Message Time</field>
+        <field name="ttype">datetime</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_message_count" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_message_count</field>
+        <field name="field_description">Message Count</field>
+        <field name="ttype">integer</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_sender" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_sender</field>
+        <field name="field_description">Sender</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_receiver" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_receiver</field>
+        <field name="field_description">Receiver</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_workspace_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_workspace_id</field>
+        <field name="field_description">Workspace ID</field>
+        <field name="ttype">integer</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_org_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_org_id</field>
+        <field name="field_description">Organization ID</field>
+        <field name="ttype">integer</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_backup_x_is_group_chat" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="name">x_is_group_chat</field>
+        <field name="field_description">Is Group Chat</field>
+        <field name="ttype">boolean</field>
+    </record>
+
+    <record id="field_res_partner_x_eazybe_whatsapp_chat_ids" model="ir.model.fields">
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="name">x_eazybe_whatsapp_chat_ids</field>
+        <field name="field_description">WhatsApp Chats by Eazybe</field>
+        <field name="ttype">one2many</field>
+        <field name="relation">x_eazybe_whatsapp_backup</field>
+        <field name="relation_field">x_partner_id</field>
+        <field name="readonly">True</field>
+    </record>
+
+    <record id="model_x_eazybe_whatsapp_conversation" model="ir.model">
+        <field name="name">Eazybe WhatsApp Conversation</field>
+        <field name="model">x_eazybe_whatsapp_conversation</field>
+        <field name="state">manual</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_name" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_name</field>
+        <field name="field_description">Conversation Name</field>
+        <field name="ttype">char</field>
+        <field name="required">True</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_partner_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_partner_id</field>
+        <field name="field_description">Contact</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">res.partner</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_lead_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_lead_id</field>
+        <field name="field_description">Lead</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">crm.lead</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_chat_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_chat_id</field>
+        <field name="field_description">Chat ID</field>
+        <field name="ttype">char</field>
+        <field name="required">True</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_latest_message_time" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_latest_message_time</field>
+        <field name="field_description">Latest Message Time</field>
+        <field name="ttype">datetime</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_message_count" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_message_count</field>
+        <field name="field_description">Message Count</field>
+        <field name="ttype">integer</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_last_message_by" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_last_message_by</field>
+        <field name="field_description">Last Message By</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_last_message_preview" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_last_message_preview</field>
+        <field name="field_description">Last Message Preview</field>
+        <field name="ttype">text</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_sender" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_sender</field>
+        <field name="field_description">Sender</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_receiver" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_receiver</field>
+        <field name="field_description">Receiver</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_workspace_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_workspace_id</field>
+        <field name="field_description">Workspace ID</field>
+        <field name="ttype">integer</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_org_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_org_id</field>
+        <field name="field_description">Organization ID</field>
+        <field name="ttype">integer</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_is_group_chat" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_is_group_chat</field>
+        <field name="field_description">Is Group Chat</field>
+        <field name="ttype">boolean</field>
+    </record>
+
+    <record id="model_x_eazybe_whatsapp_message" model="ir.model">
+        <field name="name">Eazybe WhatsApp Message</field>
+        <field name="model">x_eazybe_whatsapp_message</field>
+        <field name="state">manual</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_name" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_name</field>
+        <field name="field_description">Message Reference</field>
+        <field name="ttype">char</field>
+        <field name="required">True</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_conversation_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_conversation_id</field>
+        <field name="field_description">Conversation</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">x_eazybe_whatsapp_conversation</field>
+        <field name="required">True</field>
+        <field name="index">True</field>
+        <field name="on_delete">cascade</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_partner_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_partner_id</field>
+        <field name="field_description">Contact</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">res.partner</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_lead_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_lead_id</field>
+        <field name="field_description">Lead</field>
+        <field name="ttype">many2one</field>
+        <field name="relation">crm.lead</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_external_message_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_external_message_id</field>
+        <field name="field_description">External Message ID</field>
+        <field name="ttype">char</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_message_text" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_message_text</field>
+        <field name="field_description">Message Text</field>
+        <field name="ttype">text</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_message_direction" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_message_direction</field>
+        <field name="field_description">Message Direction</field>
+        <field name="ttype">char</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_sender_name" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_sender_name</field>
+        <field name="field_description">Sender Name</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_sender_phone" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_sender_phone</field>
+        <field name="field_description">Sender Phone</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_receiver_phone" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_receiver_phone</field>
+        <field name="field_description">Receiver Phone</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_created_by_user" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_created_by_user</field>
+        <field name="field_description">Created By User</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_sent_by_chat_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_sent_by_chat_id</field>
+        <field name="field_description">Sent By Chat ID</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_message_type" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_message_type</field>
+        <field name="field_description">Message Type</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_ack_status" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_ack_status</field>
+        <field name="field_description">Delivery Status</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_attachment_url" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_attachment_url</field>
+        <field name="field_description">Attachment URL</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_attachment_name" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_attachment_name</field>
+        <field name="field_description">Attachment Name</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_attachment_mime_type" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_attachment_mime_type</field>
+        <field name="field_description">Attachment MIME Type</field>
+        <field name="ttype">char</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_attachment_size" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_attachment_size</field>
+        <field name="field_description">Attachment Size</field>
+        <field name="ttype">integer</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_message_time" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_message_time</field>
+        <field name="field_description">Message Time</field>
+        <field name="ttype">datetime</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_workspace_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_workspace_id</field>
+        <field name="field_description">Workspace ID</field>
+        <field name="ttype">integer</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_org_id" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_org_id</field>
+        <field name="field_description">Organization ID</field>
+        <field name="ttype">integer</field>
+        <field name="index">True</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_message_x_is_group_chat" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="name">x_is_group_chat</field>
+        <field name="field_description">Is Group Chat</field>
+        <field name="ttype">boolean</field>
+    </record>
+
+    <record id="field_x_eazybe_whatsapp_conversation_x_message_ids" model="ir.model.fields">
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="name">x_message_ids</field>
+        <field name="field_description">Messages</field>
+        <field name="ttype">one2many</field>
+        <field name="relation">x_eazybe_whatsapp_message</field>
+        <field name="relation_field">x_conversation_id</field>
+        <field name="readonly">True</field>
+    </record>
+
+    <record id="field_res_partner_x_eazybe_whatsapp_conversation_ids" model="ir.model.fields">
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="name">x_eazybe_whatsapp_conversation_ids</field>
+        <field name="field_description">WhatsApp Chat Conversations</field>
+        <field name="ttype">one2many</field>
+        <field name="relation">x_eazybe_whatsapp_conversation</field>
+        <field name="relation_field">x_partner_id</field>
+        <field name="readonly">True</field>
+    </record>
+
+    <record id="field_res_partner_x_eazybe_whatsapp_chat_view_anchor" model="ir.model.fields">
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="name">x_eazybe_whatsapp_chat_view_anchor</field>
+        <field name="field_description">WhatsApp Chat View Anchor</field>
+        <field name="ttype">char</field>
+        <field name="readonly">True</field>
+    </record>
+
+    <record id="field_res_partner_x_eazybe_whatsapp_chat_count" model="ir.model.fields">
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="name">x_eazybe_whatsapp_chat_count</field>
+        <field name="field_description">WhatsApp Chats by Eazybe Count</field>
+        <field name="ttype">integer</field>
+        <field name="readonly">True</field>
+        <field name="store">False</field>
+        <field name="depends">x_eazybe_whatsapp_conversation_ids</field>
+        <field name="compute"><![CDATA[
+for partner in self:
+    partner['x_eazybe_whatsapp_chat_count'] = sum(
+        [conversation.x_message_count or 0 for conversation in partner.x_eazybe_whatsapp_conversation_ids]
+    )
+        ]]></field>
+    </record>
+</odoo>

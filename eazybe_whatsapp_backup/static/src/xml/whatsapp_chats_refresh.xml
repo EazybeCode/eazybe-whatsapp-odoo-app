@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="eazybe_whatsapp_backup.WhatsappConversationField">
+        <div class="eazybe_whatsapp_conversation_field">
+            <div class="eazybe_whatsapp_conversation_toolbar">
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    t-on-click="refresh"
+                    t-att-disabled="state.loading ? true : undefined"
+                >
+                    <t t-if="state.loading">Refreshing...</t>
+                    <t t-else="">Refresh Chats</t>
+                </button>
+                <span class="eazybe_whatsapp_conversation_meta" t-if="state.totalMessages">
+                    <t t-esc="state.totalMessages" /> messages
+                </span>
+            </div>
+
+            <div class="eazybe_whatsapp_conversation_loading" t-if="state.loading">
+                Loading WhatsApp chats...
+            </div>
+
+            <div class="eazybe_whatsapp_conversation_empty" t-if="!state.loading and !state.groups.length">
+                No WhatsApp chats backed up yet.
+            </div>
+
+            <div
+                class="eazybe_whatsapp_conversation_scroll"
+                t-if="!state.loading and state.groups.length"
+                t-ref="scrollContainer"
+            >
+                <t t-foreach="state.groups" t-as="group" t-key="group.label">
+                    <div class="eazybe_whatsapp_date_separator">
+                        <span t-esc="group.label" />
+                    </div>
+
+                    <t t-foreach="group.messages" t-as="message" t-key="message.id">
+                        <div
+                            t-att-class="message.direction === 'OUTGOING'
+                                ? 'eazybe_message_row outgoing'
+                                : 'eazybe_message_row incoming'"
+                        >
+                            <div
+                                t-att-class="message.direction === 'OUTGOING'
+                                    ? 'eazybe_message_bubble outgoing'
+                                    : 'eazybe_message_bubble incoming'"
+                            >
+                                <div class="eazybe_message_sender" t-esc="message.senderName" />
+                                <div class="eazybe_message_text" t-if="message.text" t-esc="message.text" />
+                                <a
+                                    t-if="message.attachmentUrl"
+                                    class="eazybe_message_attachment"
+                                    t-att-href="message.attachmentUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <t t-esc="message.attachmentName" />
+                                </a>
+                                <div class="eazybe_message_time" t-esc="message.timeLabel" />
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="access_x_eazybe_whatsapp_backup_user" model="ir.model.access">
+        <field name="name">x_eazybe_whatsapp_backup user</field>
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="access_x_eazybe_whatsapp_backup_admin" model="ir.model.access">
+        <field name="name">x_eazybe_whatsapp_backup admin</field>
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_backup" />
+        <field name="group_id" ref="base.group_system" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="access_x_eazybe_whatsapp_conversation_user" model="ir.model.access">
+        <field name="name">x_eazybe_whatsapp_conversation user</field>
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="access_x_eazybe_whatsapp_conversation_admin" model="ir.model.access">
+        <field name="name">x_eazybe_whatsapp_conversation admin</field>
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_conversation" />
+        <field name="group_id" ref="base.group_system" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="access_x_eazybe_whatsapp_message_user" model="ir.model.access">
+        <field name="name">x_eazybe_whatsapp_message user</field>
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="access_x_eazybe_whatsapp_message_admin" model="ir.model.access">
+        <field name="name">x_eazybe_whatsapp_message admin</field>
+        <field name="model_id" ref="eazybe_whatsapp_backup.model_x_eazybe_whatsapp_message" />
+        <field name="group_id" ref="base.group_system" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>

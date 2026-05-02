@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_x_eazybe_whatsapp_conversation_form" model="ir.ui.view">
+        <field name="name">x.eazybe.whatsapp.conversation.form</field>
+        <field name="model">x_eazybe_whatsapp_conversation</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Chats by Eazybe">
+                <sheet>
+                    <group>
+                        <field name="x_name" />
+                        <field name="x_chat_id" />
+                        <field name="x_latest_message_time" />
+                        <field name="x_last_message_by" />
+                        <field name="x_message_count" />
+                    </group>
+                    <field name="x_message_ids" mode="list,form" nolabel="1">
+                        <list string="Messages" default_order="x_message_time asc">
+                            <field name="x_message_time" />
+                            <field name="x_sender_name" />
+                            <field name="x_message_direction" />
+                            <field name="x_message_text" />
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_x_eazybe_whatsapp_message_form" model="ir.ui.view">
+        <field name="name">x.eazybe.whatsapp.message.form</field>
+        <field name="model">x_eazybe_whatsapp_message</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Message">
+                <sheet>
+                    <group>
+                        <field name="x_message_time" />
+                        <field name="x_sender_name" />
+                        <field name="x_message_direction" />
+                        <field name="x_external_message_id" />
+                    </group>
+                    <group>
+                        <field name="x_message_text" />
+                        <field name="x_attachment_url" />
+                        <field name="x_attachment_name" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_res_partner_form_inherit_eazybe_whatsapp_chats" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.eazybe.whatsapp.chats</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="WhatsApp Chats by Eazybe">
+                    <div class="eazybe_whatsapp_tab_fullwidth">
+                        <field
+                            name="x_eazybe_whatsapp_chat_view_anchor"
+                            widget="eazybe_whatsapp_chat_conversation"
+                            nolabel="1"
+                            readonly="1"
+                        />
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="menu_x_eazybe_whatsapp_backup" model="ir.ui.menu">
+        <field name="name">WhatsApp Backups</field>
+        <field name="parent_id" ref="contacts.menu_contacts" />
+        <field name="active">False</field>
+    </record>
+</odoo>
