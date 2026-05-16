@@ -16,7 +16,7 @@ Once the Odoo database is connected to Eazybe and sync is completed, WhatsApp ch
 
 ---
 
-## 2. Supported Odoo Plansgetting these conflicts when i pushed the code and branch 
+## 2. Supported Odoo Plans
 
 This app works on:
 
@@ -356,4 +356,3 @@ Before considering setup complete, confirm:
 - External API and API keys: https://www.odoo.com/documentation/19.0/developer/reference/external_api.html
 - Odoo.sh: https://www.odoo.com/documentation/19.0/administration/odoo_sh.html
 - On-premise: https://www.odoo.com/documentation/19.0/administration/on_premise.html
-
