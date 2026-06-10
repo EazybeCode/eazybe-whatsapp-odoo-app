@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onMounted, onPatched, onWillStart, useRef, useState } from "@odoo/owl";
+import { Component, onMounted, onPatched, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
@@ -145,6 +145,7 @@ export class EazybeWhatsappConversationField extends Component {
         this.orm = useService("orm");
         this.notification = useService("notification");
         this.scrollContainer = useRef("scrollContainer");
+        this.workspaceDropdown = useRef("workspaceDropdown");
         this.state = useState({
             loading: true,
             totalMessages: 0,
@@ -153,6 +154,7 @@ export class EazybeWhatsappConversationField extends Component {
             workspaceOptions: [],
             selectedWorkspaceId: ALL_WORKSPACES,
             workspaceEmployeeMap: {},
+            workspaceDropdownOpen: false,
         });
 
         onWillStart(async () => {
@@ -160,11 +162,19 @@ export class EazybeWhatsappConversationField extends Component {
         });
 
         onMounted(() => {
+            this.boundCloseWorkspaceDropdown = this.closeWorkspaceDropdownOnOutsideClick.bind(this);
+            document.addEventListener("click", this.boundCloseWorkspaceDropdown);
             this.scrollToBottom();
         });
 
         onPatched(() => {
             this.scrollToBottom();
+        });
+
+        onWillUnmount(() => {
+            if (this.boundCloseWorkspaceDropdown) {
+                document.removeEventListener("click", this.boundCloseWorkspaceDropdown);
+            }
         });
     }
 
@@ -189,6 +199,17 @@ export class EazybeWhatsappConversationField extends Component {
         }
 
         return this.state.workspaceEmployeeMap[workspaceId] || `Workspace ${workspaceId}`;
+    }
+
+    closeWorkspaceDropdownOnOutsideClick(event) {
+        const dropdownEl = this.workspaceDropdown.el;
+        if (dropdownEl && !dropdownEl.contains(event.target)) {
+            this.state.workspaceDropdownOpen = false;
+        }
+    }
+
+    toggleWorkspaceDropdown() {
+        this.state.workspaceDropdownOpen = !this.state.workspaceDropdownOpen;
     }
 
     getUniqueWorkspaceIds(messages) {
@@ -256,9 +277,14 @@ export class EazybeWhatsappConversationField extends Component {
         }
     }
 
-    onWorkspaceChange(event) {
-        this.state.selectedWorkspaceId = event.target.value || ALL_WORKSPACES;
+    selectWorkspace(workspaceId) {
+        this.state.selectedWorkspaceId = workspaceId || ALL_WORKSPACES;
+        this.state.workspaceDropdownOpen = false;
         this.applyWorkspaceFilter();
+    }
+
+    selectWorkspaceFromEvent(event) {
+        this.selectWorkspace(event.currentTarget?.dataset?.workspaceId || ALL_WORKSPACES);
     }
 
     async loadMessages() {

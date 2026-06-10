@@ -14,27 +14,49 @@
                         <t t-else="">Refresh Chats</t>
                     </button>
 
-                    <select
+                    <div
                         t-if="showWorkspaceSelector"
-                        class="eazybe_workspace_filter"
-                        t-on-change="onWorkspaceChange"
-                        t-att-disabled="state.loading ? true : undefined"
+                        class="eazybe_workspace_dropdown"
+                        t-ref="workspaceDropdown"
                     >
-                        <option
-                            value="all"
-                            t-att-selected="state.selectedWorkspaceId === 'all' ? true : undefined"
+                        <button
+                            type="button"
+                            class="eazybe_workspace_dropdown_btn"
+                            t-on-click.stop="toggleWorkspaceDropdown"
+                            t-att-disabled="state.loading ? true : undefined"
                         >
-                            All Workspaces
-                        </option>
-                        <t t-foreach="state.workspaceOptions" t-as="workspaceId" t-key="workspaceId">
-                            <option
-                                t-att-value="workspaceId"
-                                t-att-selected="state.selectedWorkspaceId === workspaceId ? true : undefined"
+                            <span class="eazybe_workspace_dropdown_text" t-esc="getWorkspaceLabel(state.selectedWorkspaceId)" />
+                            <span class="eazybe_workspace_dropdown_icon">v</span>
+                        </button>
+
+                        <div
+                            t-if="state.workspaceDropdownOpen"
+                            class="eazybe_workspace_dropdown_menu"
+                        >
+                            <button
+                                type="button"
+                                t-att-class="state.selectedWorkspaceId === 'all'
+                                    ? 'eazybe_workspace_dropdown_item active'
+                                    : 'eazybe_workspace_dropdown_item'"
+                                data-workspace-id="all"
+                                t-on-click="selectWorkspaceFromEvent"
                             >
-                                <t t-esc="getWorkspaceLabel(workspaceId)" />
-                            </option>
-                        </t>
-                    </select>
+                                All Workspaces
+                            </button>
+                            <t t-foreach="state.workspaceOptions" t-as="workspaceId" t-key="workspaceId">
+                                <button
+                                    type="button"
+                                    t-att-class="state.selectedWorkspaceId === workspaceId
+                                        ? 'eazybe_workspace_dropdown_item active'
+                                        : 'eazybe_workspace_dropdown_item'"
+                                    t-att-data-workspace-id="workspaceId"
+                                    t-on-click="selectWorkspaceFromEvent"
+                                >
+                                    <t t-esc="getWorkspaceLabel(workspaceId)" />
+                                </button>
+                            </t>
+                        </div>
+                    </div>
                 </div>
                 <span class="eazybe_whatsapp_conversation_meta" t-if="state.totalMessages">
                     <t t-esc="state.totalMessages" /> messages
