@@ -7,6 +7,8 @@ import { useService } from "@web/core/utils/hooks";
 
 const CONVERSATION_MODEL = "x_eazybe_whatsapp_conversation";
 const MESSAGE_MODEL = "x_eazybe_whatsapp_message";
+const ALL_WORKSPACES = "all";
+const EAZYBE_API_V2_BASE_URL = "https://cerberus.eazybe.com/prod/api/v2";
 
 function getCurrentPartnerIdFromPath() {
     const match = window.location.pathname.match(/\/odoo\/contacts\/(\d+)(?:\/|$)/);
@@ -124,6 +126,14 @@ function groupMessagesByDate(messages) {
     return groups;
 }
 
+function normalizeWorkspaceId(value) {
+    if (value === undefined || value === null || value === false || value === "") {
+        return null;
+    }
+
+    return String(value);
+}
+
 export class EazybeWhatsappConversationField extends Component {
     static template = "eazybe_whatsapp_backup.WhatsappConversationField";
     static props = {
@@ -138,7 +148,11 @@ export class EazybeWhatsappConversationField extends Component {
         this.state = useState({
             loading: true,
             totalMessages: 0,
+            allMessages: [],
             groups: [],
+            workspaceOptions: [],
+            selectedWorkspaceId: ALL_WORKSPACES,
+            workspaceEmployeeMap: {},
         });
 
         onWillStart(async () => {
@@ -165,12 +179,97 @@ export class EazybeWhatsappConversationField extends Component {
         }
     }
 
+    get showWorkspaceSelector() {
+        return this.state.workspaceOptions.length > 1;
+    }
+
+    getWorkspaceLabel(workspaceId) {
+        if (!workspaceId || workspaceId === ALL_WORKSPACES) {
+            return "All Workspaces";
+        }
+
+        return this.state.workspaceEmployeeMap[workspaceId] || `Workspace ${workspaceId}`;
+    }
+
+    getUniqueWorkspaceIds(messages) {
+        const workspaceIds = new Set();
+
+        for (const message of messages || []) {
+            const workspaceId = normalizeWorkspaceId(message.workspaceId);
+            if (workspaceId) {
+                workspaceIds.add(workspaceId);
+            }
+        }
+
+        return Array.from(workspaceIds).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    }
+
+    filterMessagesByWorkspace(messages, workspaceId) {
+        if (!workspaceId || workspaceId === ALL_WORKSPACES) {
+            return messages || [];
+        }
+
+        return (messages || []).filter((message) => {
+            const messageWorkspaceId = normalizeWorkspaceId(message.workspaceId);
+            return !messageWorkspaceId || messageWorkspaceId === workspaceId;
+        });
+    }
+
+    applyWorkspaceFilter() {
+        const filteredMessages = this.filterMessagesByWorkspace(
+            this.state.allMessages,
+            this.state.selectedWorkspaceId
+        );
+
+        this.state.totalMessages = filteredMessages.length;
+        this.state.groups = groupMessagesByDate(filteredMessages);
+    }
+
+    async fetchEmployeeList(workspaceIds) {
+        if (!workspaceIds.length || Object.keys(this.state.workspaceEmployeeMap).length) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${EAZYBE_API_V2_BASE_URL}/workspace/info?workspace_id=${encodeURIComponent(workspaceIds[0])}`
+            );
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+            const employees = Array.isArray(data?.data?.employees) ? data.data.employees : [];
+            const mapping = {};
+
+            for (const employee of employees) {
+                const workspaceId = normalizeWorkspaceId(employee?.workspace_id);
+                if (workspaceId && employee?.full_name) {
+                    mapping[workspaceId] = employee.full_name;
+                }
+            }
+
+            this.state.workspaceEmployeeMap = mapping;
+        } catch (error) {
+            console.error("Unable to fetch Eazybe workspace employees", error);
+        }
+    }
+
+    onWorkspaceChange(event) {
+        this.state.selectedWorkspaceId = event.target.value || ALL_WORKSPACES;
+        this.applyWorkspaceFilter();
+    }
+
     async loadMessages() {
         const partnerId = this.partnerId;
         if (!partnerId) {
             this.state.loading = false;
             this.state.totalMessages = 0;
+            this.state.allMessages = [];
             this.state.groups = [];
+            this.state.workspaceOptions = [];
+            this.state.selectedWorkspaceId = ALL_WORKSPACES;
             return;
         }
 
@@ -192,7 +291,10 @@ export class EazybeWhatsappConversationField extends Component {
 
             if (!conversationIds.length) {
                 this.state.totalMessages = 0;
+                this.state.allMessages = [];
                 this.state.groups = [];
+                this.state.workspaceOptions = [];
+                this.state.selectedWorkspaceId = ALL_WORKSPACES;
                 return;
             }
 
@@ -207,6 +309,7 @@ export class EazybeWhatsappConversationField extends Component {
                     "x_attachment_url",
                     "x_attachment_name",
                     "x_message_time",
+                    "x_workspace_id",
                 ],
                 {
                     order: "x_message_time asc, id asc",
@@ -228,11 +331,23 @@ export class EazybeWhatsappConversationField extends Component {
                     attachmentUrl: record.x_attachment_url || "",
                     attachmentName: record.x_attachment_name || "Open attachment",
                     timeLabel: formatTimeLabel(date),
+                    workspaceId: normalizeWorkspaceId(record.x_workspace_id),
                 };
             });
 
-            this.state.totalMessages = messages.length;
-            this.state.groups = groupMessagesByDate(messages);
+            const workspaceOptions = this.getUniqueWorkspaceIds(messages);
+            this.state.allMessages = messages;
+            this.state.workspaceOptions = workspaceOptions;
+
+            if (
+                this.state.selectedWorkspaceId !== ALL_WORKSPACES &&
+                !workspaceOptions.includes(this.state.selectedWorkspaceId)
+            ) {
+                this.state.selectedWorkspaceId = ALL_WORKSPACES;
+            }
+
+            await this.fetchEmployeeList(workspaceOptions);
+            this.applyWorkspaceFilter();
         } catch (error) {
             console.error("Eazybe WhatsApp chat refresh failed", error);
             this.notification.add("Unable to refresh WhatsApp chats for this contact.", {

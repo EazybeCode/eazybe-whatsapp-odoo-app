@@ -3,15 +3,39 @@
     <t t-name="eazybe_whatsapp_backup.WhatsappConversationField">
         <div class="eazybe_whatsapp_conversation_field">
             <div class="eazybe_whatsapp_conversation_toolbar">
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    t-on-click="refresh"
-                    t-att-disabled="state.loading ? true : undefined"
-                >
-                    <t t-if="state.loading">Refreshing...</t>
-                    <t t-else="">Refresh Chats</t>
-                </button>
+                <div class="eazybe_whatsapp_conversation_actions">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        t-on-click="refresh"
+                        t-att-disabled="state.loading ? true : undefined"
+                    >
+                        <t t-if="state.loading">Refreshing...</t>
+                        <t t-else="">Refresh Chats</t>
+                    </button>
+
+                    <select
+                        t-if="showWorkspaceSelector"
+                        class="eazybe_workspace_filter"
+                        t-on-change="onWorkspaceChange"
+                        t-att-disabled="state.loading ? true : undefined"
+                    >
+                        <option
+                            value="all"
+                            t-att-selected="state.selectedWorkspaceId === 'all' ? true : undefined"
+                        >
+                            All Workspaces
+                        </option>
+                        <t t-foreach="state.workspaceOptions" t-as="workspaceId" t-key="workspaceId">
+                            <option
+                                t-att-value="workspaceId"
+                                t-att-selected="state.selectedWorkspaceId === workspaceId ? true : undefined"
+                            >
+                                <t t-esc="getWorkspaceLabel(workspaceId)" />
+                            </option>
+                        </t>
+                    </select>
+                </div>
                 <span class="eazybe_whatsapp_conversation_meta" t-if="state.totalMessages">
                     <t t-esc="state.totalMessages" /> messages
                 </span>

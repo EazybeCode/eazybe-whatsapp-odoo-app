@@ -25,8 +25,31 @@
     margin-bottom: 2px;
 }
 
+.eazybe_whatsapp_conversation_actions {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+}
+
+.eazybe_workspace_filter {
+    appearance: auto;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #1f2937;
+    font-size: 0.82rem;
+    height: 32px;
+    max-width: min(240px, 100%);
+    min-width: 168px;
+    padding: 4px 8px;
+}
+
 .eazybe_whatsapp_conversation_meta {
     color: #8d99ae;
+    flex: 0 0 auto;
     font-size: 0.82rem;
 }
 
