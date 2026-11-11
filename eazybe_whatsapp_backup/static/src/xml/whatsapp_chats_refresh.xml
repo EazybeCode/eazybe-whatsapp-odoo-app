@@ -67,15 +67,56 @@
                 Loading WhatsApp chats...
             </div>
 
-            <div class="eazybe_whatsapp_conversation_empty" t-if="!state.loading and !state.groups.length">
+            <div class="eazybe_whatsapp_conversation_empty" t-if="!state.loading and !state.totalMessages">
                 No WhatsApp chats backed up yet.
             </div>
+
+            <t t-if="!state.loading and state.totalMessages">
+                <!-- Section 1: the 1:1 chat. Section 2: group chats. -->
+                <div class="eazybe_whatsapp_sections">
+                    <button
+                        type="button"
+                        t-att-class="state.section === 'direct' ? 'btn btn-sm eazybe_section_tab active' : 'btn btn-sm eazybe_section_tab'"
+                        t-on-click="() => this.selectSection('direct')"
+                    >
+                        1:1 Chat (<t t-esc="state.directTotal" />)
+                    </button>
+                    <button
+                        type="button"
+                        t-att-class="state.section === 'group' ? 'btn btn-sm eazybe_section_tab active' : 'btn btn-sm eazybe_section_tab'"
+                        t-on-click="() => this.selectSection('group')"
+                    >
+                        Group Chats (<t t-esc="groupMessageTotal" />)
+                    </button>
+                </div>
+
+                <!-- Inside "Group Chats": one chip per WhatsApp group. -->
+                <div class="eazybe_whatsapp_group_list" t-if="state.section === 'group' and state.groupChats.length">
+                    <t t-foreach="state.groupChats" t-as="chat" t-key="chat.id">
+                        <button
+                            type="button"
+                            t-att-class="selectedGroupChat and selectedGroupChat.id === chat.id ? 'eazybe_group_chip active' : 'eazybe_group_chip'"
+                            t-on-click="() => this.selectGroup(chat.id)"
+                        >
+                            <t t-esc="chat.name" /> (<t t-esc="chat.total" />)
+                        </button>
+                    </t>
+                </div>
+
+                <div class="eazybe_whatsapp_conversation_empty" t-if="!state.groups.length">
+                    <t t-if="state.section === 'group'">No group chats backed up for this contact yet.</t>
+                    <t t-else="">No 1:1 chat backed up for this contact yet.</t>
+                </div>
+            </t>
 
             <div
                 class="eazybe_whatsapp_conversation_scroll"
                 t-if="!state.loading and state.groups.length"
                 t-ref="scrollContainer"
             >
+                <div class="eazybe_whatsapp_group_title" t-if="state.section === 'group' and selectedGroupChat">
+                    Group: <t t-esc="selectedGroupChat.name" />
+                </div>
                 <t t-foreach="state.groups" t-as="group" t-key="group.label">
                     <div class="eazybe_whatsapp_date_separator">
                         <span t-esc="group.label" />

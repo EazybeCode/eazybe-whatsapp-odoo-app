@@ -155,7 +155,14 @@ export class EazybeWhatsappConversationField extends Component {
             selectedWorkspaceId: ALL_WORKSPACES,
             workspaceEmployeeMap: {},
             workspaceDropdownOpen: false,
+            // 1:1 and group chats are never mixed: section "direct" = the 1:1 chat,
+            // section "group" = one view per WhatsApp group (selectedGroupId).
+            section: "direct",
+            directTotal: 0,
+            groupChats: [],
+            selectedGroupId: null,
         });
+        this.conversationById = new Map();
 
         onWillStart(async () => {
             await this.loadMessages();
@@ -236,14 +243,76 @@ export class EazybeWhatsappConversationField extends Component {
         });
     }
 
+    get groupMessageTotal() {
+        return this.state.groupChats.reduce((sum, chat) => sum + chat.total, 0);
+    }
+
+    get selectedGroupChat() {
+        return this.state.groupChats.find((chat) => chat.id === this.state.selectedGroupId)
+            || this.state.groupChats[0]
+            || null;
+    }
+
+    selectSection(section) {
+        this.state.section = section;
+        this.applyWorkspaceFilter();
+    }
+
+    selectGroup(groupId) {
+        this.state.section = "group";
+        this.state.selectedGroupId = groupId;
+        this.applyWorkspaceFilter();
+    }
+
+    /**
+     * Workspace filter first (as before), then split: 1:1 messages in one timeline, each WhatsApp
+     * group in its own (keyed by group id, so a group backed up by several colleagues shows once).
+     * `state.groups` stays "the date-grouped messages on screen".
+     */
     applyWorkspaceFilter() {
         const filteredMessages = this.filterMessagesByWorkspace(
             this.state.allMessages,
             this.state.selectedWorkspaceId
         );
 
+        const directMessages = [];
+        const byGroup = new Map();
+        for (const message of filteredMessages) {
+            const conversation = this.conversationById.get(message.conversationId);
+            if (!conversation?.isGroup) {
+                directMessages.push(message);
+                continue;
+            }
+            const key = conversation.chatId || `conversation-${message.conversationId}`;
+            if (!byGroup.has(key)) {
+                byGroup.set(key, { id: key, name: conversation.name || "WhatsApp group", messages: [] });
+            }
+            byGroup.get(key).messages.push(message);
+        }
+
+        const groupChats = [...byGroup.values()]
+            .map((chat) => ({
+                id: chat.id,
+                name: chat.name,
+                total: chat.messages.length,
+                latest: chat.messages[chat.messages.length - 1]?.date?.getTime() || 0,
+                messages: chat.messages,
+            }))
+            .sort((a, b) => b.latest - a.latest);
+
+        this.state.directTotal = directMessages.length;
+        this.state.groupChats = groupChats.map(({ messages, ...chat }) => chat);
+        if (!groupChats.some((chat) => chat.id === this.state.selectedGroupId)) {
+            this.state.selectedGroupId = groupChats[0]?.id || null;
+        }
+        if (this.state.section === "group" && !groupChats.length) this.state.section = "direct";
+        if (this.state.section === "direct" && !directMessages.length && groupChats.length) this.state.section = "group";
+
+        const visible = this.state.section === "group"
+            ? (groupChats.find((chat) => chat.id === this.state.selectedGroupId)?.messages || [])
+            : directMessages;
         this.state.totalMessages = filteredMessages.length;
-        this.state.groups = groupMessagesByDate(filteredMessages);
+        this.state.groups = groupMessagesByDate(visible);
     }
 
     async fetchEmployeeList(workspaceIds) {
@@ -305,7 +374,7 @@ export class EazybeWhatsappConversationField extends Component {
             const conversations = await this.orm.searchRead(
                 CONVERSATION_MODEL,
                 [["x_partner_id", "=", partnerId]],
-                ["id", "x_chat_id", "x_latest_message_time", "x_message_count"],
+                ["id", "x_name", "x_chat_id", "x_is_group_chat", "x_latest_message_time", "x_message_count"],
                 {
                     order: "x_latest_message_time asc, id asc",
                 }
@@ -314,6 +383,16 @@ export class EazybeWhatsappConversationField extends Component {
             const conversationIds = (Array.isArray(conversations) ? conversations : [])
                 .map((conversation) => Number(conversation.id))
                 .filter((conversationId) => Number.isFinite(conversationId) && conversationId > 0);
+
+            // A conversation is a group chat when flagged, or when its chat id is a WhatsApp group id.
+            this.conversationById = new Map((Array.isArray(conversations) ? conversations : []).map((conversation) => [
+                Number(conversation.id),
+                {
+                    isGroup: Boolean(conversation.x_is_group_chat) || String(conversation.x_chat_id || "").endsWith("@g.us"),
+                    chatId: String(conversation.x_chat_id || ""),
+                    name: String(conversation.x_name || "").trim(),
+                },
+            ]));
 
             if (!conversationIds.length) {
                 this.state.totalMessages = 0;
@@ -329,6 +408,7 @@ export class EazybeWhatsappConversationField extends Component {
                 [["x_conversation_id", "in", conversationIds]],
                 [
                     "id",
+                    "x_conversation_id",
                     "x_message_text",
                     "x_message_direction",
                     "x_sender_name",
@@ -350,6 +430,7 @@ export class EazybeWhatsappConversationField extends Component {
 
                 return {
                     id: Number(record.id),
+                    conversationId: Number(Array.isArray(record.x_conversation_id) ? record.x_conversation_id[0] : record.x_conversation_id),
                     date,
                     direction,
                     senderName: record.x_sender_name || (direction === "OUTGOING" ? "Eazybe User" : "Customer"),
