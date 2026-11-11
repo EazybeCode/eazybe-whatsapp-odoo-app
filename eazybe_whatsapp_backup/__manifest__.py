@@ -1,6 +1,6 @@
 {
     "name": "WhatsApp Integration by Eazybe",
-    "version": "19.0.1.2.0",
+    "version": "19.0.1.3.0",
     "summary": "Connect Personal WhatsApp or WhatsApp Business to Odoo - No API",
     "category": "Marketing",
     "license": "OPL-1",

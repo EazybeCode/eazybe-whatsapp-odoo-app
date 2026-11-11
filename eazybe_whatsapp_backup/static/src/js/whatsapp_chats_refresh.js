@@ -4,6 +4,9 @@ import { Component, onMounted, onPatched, onWillStart, onWillUnmount, useRef, us
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { useService } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
+
+const normalizeEmail = (value) => String(value || "").trim().toLowerCase();
 
 const CONVERSATION_MODEL = "x_eazybe_whatsapp_conversation";
 const MESSAGE_MODEL = "x_eazybe_whatsapp_message";
@@ -163,6 +166,8 @@ export class EazybeWhatsappConversationField extends Component {
             selectedGroupId: null,
         });
         this.conversationById = new Map();
+        this.workspaceEmailById = {};
+        this.userPickedWorkspace = false;
 
         onWillStart(async () => {
             await this.loadMessages();
@@ -349,6 +354,11 @@ export class EazybeWhatsappConversationField extends Component {
                 if (ownName) {
                     mapping[workspaceId] = ownName;
                 }
+                // Kept to open the logged-in user's own chats by default (see pickDefaultWorkspace).
+                const ownEmail = normalizeEmail(data?.data?.workspace?.email);
+                if (ownEmail) {
+                    this.workspaceEmailById[workspaceId] = ownEmail;
+                }
             } catch (error) {
                 console.error(`Unable to fetch Eazybe workspace ${workspaceId}`, error);
             }
@@ -357,7 +367,47 @@ export class EazybeWhatsappConversationField extends Component {
         this.state.workspaceEmployeeMap = mapping;
     }
 
+    /** The logged-in Odoo user's email and login (lower-cased), read once. Empty on failure. */
+    async getCurrentUserEmails() {
+        if (this.currentUserEmails) {
+            return this.currentUserEmails;
+        }
+        const emails = new Set();
+        try {
+            const userId = user?.userId;
+            if (userId) {
+                const rows = await this.orm.read("res.users", [userId], ["login", "email"]);
+                for (const row of Array.isArray(rows) ? rows : []) {
+                    [row?.login, row?.email].map(normalizeEmail).filter((value) => value.includes("@")).forEach((value) => emails.add(value));
+                }
+            }
+        } catch (error) {
+            console.warn("Eazybe: could not read the current Odoo user's email", error);
+        }
+        this.currentUserEmails = emails;
+        return emails;
+    }
+
+    /**
+     * Opens on the logged-in user's own workspace: the Eazybe workspace whose email equals the Odoo
+     * user's email or login. Only until the user picks a workspace by hand; no match → "All Workspaces".
+     */
+    async pickDefaultWorkspace(workspaceOptions) {
+        if (this.userPickedWorkspace || !workspaceOptions.length) {
+            return;
+        }
+        const emails = await this.getCurrentUserEmails();
+        if (!emails.size) {
+            return;
+        }
+        const mine = workspaceOptions.find((workspaceId) => emails.has(this.workspaceEmailById[workspaceId]));
+        if (mine) {
+            this.state.selectedWorkspaceId = mine;
+        }
+    }
+
     selectWorkspace(workspaceId) {
+        this.userPickedWorkspace = true;
         this.state.selectedWorkspaceId = workspaceId || ALL_WORKSPACES;
         this.state.workspaceDropdownOpen = false;
         this.applyWorkspaceFilter();
@@ -465,6 +515,7 @@ export class EazybeWhatsappConversationField extends Component {
             }
 
             await this.fetchEmployeeList(workspaceOptions);
+            await this.pickDefaultWorkspace(workspaceOptions);
             this.applyWorkspaceFilter();
         } catch (error) {
             console.error("Eazybe WhatsApp chat refresh failed", error);
