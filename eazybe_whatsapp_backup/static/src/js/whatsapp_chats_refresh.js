@@ -315,35 +315,46 @@ export class EazybeWhatsappConversationField extends Component {
         this.state.groups = groupMessagesByDate(visible);
     }
 
+    /**
+     * Names for the workspace dropdown. `/workspace/info` answers `data.workspace.name` for the
+     * workspace asked, and `data.employees` only for some (often empty), so each workspace that
+     * still has no name is asked once, in parallel. A failed call leaves "Workspace <id>".
+     */
     async fetchEmployeeList(workspaceIds) {
-        if (!workspaceIds.length || Object.keys(this.state.workspaceEmployeeMap).length) {
+        const mapping = { ...this.state.workspaceEmployeeMap };
+        const missing = (workspaceIds || []).filter((workspaceId) => workspaceId && !mapping[workspaceId]);
+        if (!missing.length) {
             return;
         }
 
-        try {
-            const response = await fetch(
-                `${EAZYBE_API_V2_BASE_URL}/workspace/info?workspace_id=${encodeURIComponent(workspaceIds[0])}`
-            );
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
-            const employees = Array.isArray(data?.data?.employees) ? data.data.employees : [];
-            const mapping = {};
-
-            for (const employee of employees) {
-                const workspaceId = normalizeWorkspaceId(employee?.workspace_id);
-                if (workspaceId && employee?.full_name) {
-                    mapping[workspaceId] = employee.full_name;
+        await Promise.all(missing.map(async (workspaceId) => {
+            try {
+                const response = await fetch(
+                    `${EAZYBE_API_V2_BASE_URL}/workspace/info?workspace_id=${encodeURIComponent(workspaceId)}`
+                );
+                if (!response.ok) {
+                    return;
                 }
-            }
 
-            this.state.workspaceEmployeeMap = mapping;
-        } catch (error) {
-            console.error("Unable to fetch Eazybe workspace employees", error);
-        }
+                const data = await response.json();
+                const employees = Array.isArray(data?.data?.employees) ? data.data.employees : [];
+                for (const employee of employees) {
+                    const employeeWorkspaceId = normalizeWorkspaceId(employee?.workspace_id);
+                    if (employeeWorkspaceId && employee?.full_name && !mapping[employeeWorkspaceId]) {
+                        mapping[employeeWorkspaceId] = employee.full_name;
+                    }
+                }
+
+                const ownName = String(data?.data?.workspace?.name || "").trim();
+                if (ownName) {
+                    mapping[workspaceId] = ownName;
+                }
+            } catch (error) {
+                console.error(`Unable to fetch Eazybe workspace ${workspaceId}`, error);
+            }
+        }));
+
+        this.state.workspaceEmployeeMap = mapping;
     }
 
     selectWorkspace(workspaceId) {
